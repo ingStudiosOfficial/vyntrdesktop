@@ -1,0 +1,199 @@
+Header {
+    background: #f0edd4;
+    color: #8c370d;
+    width: 100%;
+    padding: 1;
+    text-align: center;
+}
+
+Screen {
+    background: #f6f3d8;
+    color: #506A95;
+    overflow-y: auto;
+    height: 100%;
+}
+
+#search_input, #api_input {
+    background: #f2f2d9;
+    color: #7c8ba2;
+    border: round #a8a75d;
+    margin: 0 1;
+    text-align: center;
+    width: 50%;
+}
+
+.welcome_text {
+    margin: 1 0;
+    text-align: center;
+}
+
+.vyntr_title {
+    color: #7e3a10;
+    margin: 1 0;
+    text-align: center;
+}
+
+#show_api {
+    border: round #a8a75d;
+    background: transparent;
+    color: #7e3a10;
+    text-align: center;
+    margin: 1;
+    content-align: center middle;
+    width: auto;
+}
+
+#search_results_container {
+    width: 100%;
+    height: auto;
+    layout: vertical;
+    padding: 1 0;
+}
+
+#search_results_container > Center {
+    margin-bottom: 1;  /* Gap between all centered containers */
+}
+
+#search_results_container > Center:last-child {
+    margin-bottom: 0;  /* Remove margin from last item */
+}
+
+.error_text {
+    text-align: center;
+    width: auto;
+}
+
+.hidden {
+    display: none;
+}
+
+.search_result_item {
+    border: #a7a159 round;
+    background: #ebe3ca;
+    color: #637291;
+    height: auto;
+    padding: 1 2;
+    width: 80%;
+}
+
+.bliptext_card {
+    border: #355ef6 round;
+    height: auto;
+    padding: 1 2;
+    width: 80%;
+    background: #e8e5f9;
+}
+
+.date_card, .word_card, .currency_card, .unit_conversion_card {
+    border: #a7a159 round;
+    background: #ebe3ca;
+    color: #637291;
+    height: auto;
+    padding: 1 2;
+    width: 80%;
+}
+
+.result_title, .bliptext_title {
+    color: #436cd8;
+    text-style: underline bold;
+    margin-bottom: 1;
+}
+
+.bliptext_property {
+    color: #436cd8;
+    margin-bottom: 1;
+}
+
+.result_url, .bliptext_url {
+    color: #436cd8;
+    text-style: underline;
+    margin: 1 0;
+}
+
+.result_preview, .bliptext_intro {
+    color: #637291;
+}
+
+.date_description {
+    color: #b58969;
+    margin-bottom: 1;
+}
+
+.date_display {
+    color: #000000;
+    text-style: bold;
+    margin-bottom: 1;
+}
+
+.date_date {
+    color: #637291;
+    margin-bottom: 0;
+}
+
+.word_word {
+    text-style: bold;
+    color: #000000;
+    margin-bottom: 1;
+}
+
+.word_pos {
+    text-style: italic;
+    margin-bottom: 1;
+}
+
+.definition, .synonym {
+    color: #637291;
+}
+
+.synonyms_header {
+    color: #000000;
+    margin-bottom: 1;
+}
+
+.definitions_container {
+    border: round #a7a159;
+    height: auto;
+    padding: 1;
+    margin-bottom: 1;
+}
+
+.synonyms_container {
+    border: round #a7a159;
+    height: auto;
+    padding: 1;
+    margin-bottom: 0;
+}
+
+.base_currency, .exchange_rate {
+    color: #637291;
+    margin-bottom: 1;
+}
+
+.converted_currency {
+    color: #000000;
+    margin-bottom: 1;
+    text-style: bold;
+}
+
+.currency_last_updated {
+    text-style: italic;
+    margin-bottom: 0;
+    color: #637291;
+}
+
+.initial_value {
+    color: #637291;
+    margin-bottom: 1;
+}
+
+.converted_value {
+    text-style: bold;
+    color: #000000;
+    margin-bottom: 1;
+}
+
+.conversion_category {
+    text-style: italic;
+    color: #637291;
+    margin-bottom: 0;
+}
