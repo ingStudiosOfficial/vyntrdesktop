@@ -3,13 +3,15 @@ from textual.widgets import Static, Header, Footer, Input, Button
 from textual.reactive import reactive
 from textual.containers import Center, Container
 from textual import on
-import re
-import requests
-import os
-import webbrowser
 from ics import Calendar, Event
 from datetime import datetime, timedelta
-import json
+import re, requests, os, webbrowser, json, sys
+
+# Get base path for PyInstaller bundled files
+if getattr(sys, 'frozen', False):
+    base_path = sys._MEIPASS
+else:
+    base_path = os.path.dirname(__file__)
 
 class WebResult(Container):
     def __init__(self, title: str, url: str, preview: str, **kwargs):
@@ -180,7 +182,7 @@ class UnitConversionContainer(Container):
         yield Static(f'Converting {self.category}', classes="conversion_category")
 
 class VyntrForDesktop(App):
-    CSS_PATH = 'style.tcss'
+    CSS_PATH = os.path.join(base_path, "style.tcss")
 
     BINDINGS = [
         ("q", "quit", "Quit App")
