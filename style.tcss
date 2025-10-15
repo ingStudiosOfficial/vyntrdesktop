@@ -33,7 +33,7 @@ Screen {
     text-align: center;
 }
 
-#show_api {
+#show_api, .delete_history_button {
     border: round #a8a75d;
     background: transparent;
     color: #803c12;
@@ -84,13 +84,17 @@ Screen {
     background: #e8e5f9;
 }
 
-.date_card, .word_card, .currency_card, .unit_conversion_card {
+.date_card, .word_card, .currency_card, .unit_conversion_card, .search_history_item {
     border: #a7a159 round;
     background: #ebe3ca;
     color: #637291;
     height: auto;
     padding: 1 2;
     width: 80%;
+}
+
+.search_history_item {
+    margin-bottom: 1;
 }
 
 .result_title, .bliptext_title {
@@ -196,4 +200,20 @@ Screen {
     text-style: italic;
     color: #637291;
     margin-bottom: 0;
+}
+
+.search_history_title {
+    text-style: bold;
+    color: #7e3a10;
+    text-align: center;
+    margin: 1;
+}
+
+.date_searched {
+    margin-bottom: 1;
+}
+
+.item_searched {
+    margin-bottom: 0;
+    color: #000000;
 }

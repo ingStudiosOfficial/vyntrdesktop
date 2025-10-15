@@ -2,9 +2,10 @@ from textual.app import App, ComposeResult
 from textual.widgets import Static, Header, Footer, Input, Button
 from textual.reactive import reactive
 from textual.containers import Center, Container
+from textual.screen import Screen
 from textual import on
 from ics import Calendar, Event
-from datetime import datetime, timedelta
+from datetime import datetime, date
 import re, requests, os, webbrowser, json, sys
 
 # Get base path for PyInstaller bundled files
@@ -12,6 +13,9 @@ if getattr(sys, 'frozen', False):
     base_path = sys._MEIPASS
 else:
     base_path = os.path.dirname(__file__)
+
+searchHistory = []
+vyntrApiKey = ''
 
 class WebResult(Container):
     def __init__(self, title: str, url: str, preview: str, **kwargs):
@@ -184,13 +188,13 @@ class UnitConversionContainer(Container):
 class SetApiKeyButton(Button):
     def __init__(self, **kwargs):
         super().__init__(label="Set API key", **kwargs)
-        self.action = "save_api_key"
 
 class VyntrForDesktop(App):
     CSS_PATH = os.path.join(base_path, "style.tcss")
 
     BINDINGS = [
-        ("q", "quit", "Quit App")
+        ("q", "quit", "Quit App"),
+        ("h", "displaySearchHistory", "Search History"),
     ]
 
     TITLE = 'Vyntr for Desktop'
@@ -203,16 +207,13 @@ class VyntrForDesktop(App):
         with open(pathToSave, 'w') as f:
             json.dump({}, f)
 
-    searchHistory = []
-    vyntrApiKey = ''
-
     def compose(self) -> ComposeResult:
         yield Header()
         yield Static('Vyntr for Desktop', classes="vyntr_title")
         yield Static('Welcome to Vyntr for Desktop! Start searching to get started!', classes="welcome_text")
         with Center():
             yield Input(placeholder="How do I cook...", id="search_input")
-            yield Input(placeholder="Vyntr API key", id="api_input", classes="hidden", value=self.vyntrApiKey)
+            yield Input(placeholder="Vyntr API key", id="api_input", classes="hidden", value=vyntrApiKey)
         with Center():
             yield SetApiKeyButton(id="show_api")
         with Center():
@@ -318,7 +319,7 @@ class VyntrForDesktop(App):
         searchQueryToFetch = re.sub(r" ", "%20", searchQuery, flags=re.IGNORECASE)
 
         headers = {
-            'Authorization': f'Bearer {self.vyntrApiKey}'
+            'Authorization': f'Bearer {vyntrApiKey}'
         }
 
         BASE_URL = f'https://vyntr.com/api/v1/search?q={searchQueryToFetch}'
@@ -333,7 +334,7 @@ class VyntrForDesktop(App):
 
             if response.status_code == 200:
                 self.log('Fetch result successful.')
-                self.searchHistory.append(searchQuery)
+                searchHistory.insert(0, { 'query': searchQuery, 'date': date.today().strftime("%d %m %Y") })
                 self.displaySearchResults(response.json(), searchQuery)
             elif response.status_code == 401:
                 self.log('API key invalid or missing.')
@@ -361,17 +362,44 @@ class VyntrForDesktop(App):
             )
 
     def saveProgramData(self):
+        global vyntrApiKey
         apiKey = self.query_one("#api_input", Input).value
         
         fileContent = {
             'apiKey': apiKey,
-            'history': self.searchHistory
+            'history': searchHistory
         }
 
-        self.vyntrApiKey = apiKey
+        vyntrApiKey = apiKey
 
         with open(self.pathToSave, 'w') as file:
             json.dump(fileContent, file)
+
+    def loadProgramData(self):
+        global vyntrApiKey, searchHistory
+        try:
+            if os.path.exists(self.pathToSave):
+                with open(self.pathToSave, 'r') as file:
+                    content = file.read().strip()
+                    if content:
+                        data = json.loads(content)
+
+                        # Assign each property to its variables
+                        vyntrApiKey = data.get('apiKey', '')
+                        searchHistory = data.get('history', [])
+
+                        # Set the API key input value to the loaded API key
+                        api_input_widget = self.query_one("#api_input", Input)
+                        api_input_widget.value = vyntrApiKey
+        except json.JSONDecodeError:
+            self.log("Error loading program data: Invalid JSON")
+        except Exception as e:
+            self.log(f"Error loading program data: {e}")
+
+    @on(Input.Submitted, '#api_input')
+    def saveApiKey(self, event: Input.Submitted) -> None:
+        self.saveProgramData()
+        self.notify('Vyntr API key saved successfully.', timeout=1.5)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         buttonId = event.button.id
@@ -379,28 +407,63 @@ class VyntrForDesktop(App):
         if buttonId == "show_api":
             self.query_one("#api_input").toggle_class("hidden")
 
-    def loadProgramData(self):
-        try:
-            if os.path.exists(self.pathToSave):
-                with open(self.pathToSave, 'r') as file:
-                    content = file.read().strip()
-                    if content:
-                        data = json.loads(content)
-                        self.vyntrApiKey = data.get('apiKey', '')
-                        api_input_widget = self.query_one("#api_input", Input)
-                        api_input_widget.value = self.vyntrApiKey
-        except json.JSONDecodeError:
-            self.log("Error loading program data: Invalid JSON")
-        except Exception as e:
-            self.log(f"Error loading program data: {e}")
-
-    def action_save_api_key(self) -> None:
-        self.saveProgramData()
-        self.notify('Vyntr API key saved successfully.')
-
     def action_quit(self) -> None:
         self.saveProgramData()
         self.exit()
+
+    def action_displaySearchHistory(self) -> None:
+        self.push_screen(SearchHistoryScreen())
+
+class SearchHistoryItem(Container):
+    def __init__(self, itemSearched: str, dateSearched: str, index: int, **kwargs):
+        super().__init__(**kwargs)
+        self.itemSearched = itemSearched
+        self.dateSearched = dateSearched
+        self.index = index
+
+    def compose(self) -> ComposeResult:
+        if self.dateSearched:
+            yield Static(self.dateSearched, classes="date_searched")
+        else:
+            yield Static('Unknown date', classes="date_searched")
+
+        yield Static(self.itemSearched, classes="item_searched")
+        yield Button("Delete", id=f"delete_{self.index}", classes="delete_history_button")
+
+class SearchHistoryScreen(Screen):
+    CSS_PATH = os.path.join(base_path, "style.tcss")
+
+    BINDINGS = [
+        ("escape", "app.pop_screen", "Back")
+    ]
+
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Static('Search History', classes="search_history_title")
+        for index, searchedItem in enumerate(searchHistory):
+            searchedQuery = searchedItem.get('query', 'Unknown query')
+            searchedDate = searchedItem.get('date', 'Unknown date')
+            yield Center(
+                SearchHistoryItem(searchedQuery, searchedDate, index, classes="search_history_item")
+            )
+        yield Footer()
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id and event.button.id.startswith("delete_"):
+            # Extract the index from the button ID
+            index = int(event.button.id.split("_")[1])
+            
+            # Remove from global searchHistory
+            global searchHistory
+            if 0 <= index < len(searchHistory):
+                del searchHistory[index]
+                
+                # Save the updated history
+                self.app.saveProgramData()
+                
+                # Refresh the screen
+                self.refresh(recompose=True)
+                self.app.notify('Search history item deleted.', timeout=1.5)
 
 if __name__ == "__main__":
     app = VyntrForDesktop()
