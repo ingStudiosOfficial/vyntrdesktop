@@ -214,6 +214,10 @@ Screen {
 }
 
 .item_searched {
-    margin-bottom: 0;
+    margin-bottom: 1;
     color: #000000;
+}
+
+.delete_history_button {
+    margin: 0;
 }

@@ -19,7 +19,7 @@ Vyntr is an independent search engine created by FaceDev. The Vyntr source code 
 
 ## Setup
 1. **Clone the repo using Git ```git clone https://github.com/ingStudiosOfficial/vyntrdesktop.git```**
-2. **Install all the dependencies and libraries using pip ```pip install -r requirements.txt```**
+2. **Install all the dependencies and packages using pip ```pip install -r requirements.txt```**
 
 ## Run the project
 1. **Run the project using textual ```textual run vyntr.py```**
