@@ -1,4 +1,4 @@
-<img src="./vyntr.svg" />
+<img src="./vyntr.svg" width="50px" />
 
 # Vyntr for Desktop 🌐
 **Vyntr for Desktop** is the **Vyntr search engine** but running in a **terminal** as a **TUI**.
