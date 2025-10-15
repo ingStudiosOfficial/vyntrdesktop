@@ -9,6 +9,7 @@ body {
     height: 100vh;
     color: #5b7294;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
 }
 
 ::-webkit-scrollbar {
