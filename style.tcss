@@ -36,7 +36,7 @@ Screen {
 #show_api {
     border: round #a8a75d;
     background: transparent;
-    color: #7e3a10;
+    color: #803c12;
     text-align: center;
     margin: 1;
     content-align: center middle;
