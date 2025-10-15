@@ -181,6 +181,11 @@ class UnitConversionContainer(Container):
         yield Static(f'{str(self.result)} {self.toUnit}', classes="converted_value")
         yield Static(f'Converting {self.category}', classes="conversion_category")
 
+class SetApiKeyButton(Button):
+    def __init__(self, **kwargs):
+        super().__init__(label="Set API key", **kwargs)
+        self.action = "save_api_key"
+
 class VyntrForDesktop(App):
     CSS_PATH = os.path.join(base_path, "style.tcss")
 
@@ -207,9 +212,9 @@ class VyntrForDesktop(App):
         yield Static('Welcome to Vyntr for Desktop! Start searching to get started!', classes="welcome_text")
         with Center():
             yield Input(placeholder="How do I cook...", id="search_input")
-            yield Input(placeholder="Vyntr API key", id="api_input", classes="hidden")
+            yield Input(placeholder="Vyntr API key", id="api_input", classes="hidden", value=self.vyntrApiKey)
         with Center():
-            yield Button('Set API key', id="show_api")
+            yield SetApiKeyButton(id="show_api")
         with Center():
             yield Container(id="search_results_container")
         yield Footer()
@@ -328,6 +333,7 @@ class VyntrForDesktop(App):
 
             if response.status_code == 200:
                 self.log('Fetch result successful.')
+                self.searchHistory.append(searchQuery)
                 self.displaySearchResults(response.json(), searchQuery)
             elif response.status_code == 401:
                 self.log('API key invalid or missing.')
@@ -354,19 +360,18 @@ class VyntrForDesktop(App):
                 Center(Static('An unexpected error occurred while fetching search results. Please ensure you are connected to the internet and try again.', classes="error_text"))
             )
 
-    @on(Input.Submitted, "#api_input")
-    def saveProgramData(self, event: Input.Submitted):
-        apiKey = event.value
+    def saveProgramData(self):
+        apiKey = self.query_one("#api_input", Input).value
         
         fileContent = {
-            'apiKey': apiKey
+            'apiKey': apiKey,
+            'history': self.searchHistory
         }
+
+        self.vyntrApiKey = apiKey
 
         with open(self.pathToSave, 'w') as file:
             json.dump(fileContent, file)
-       
-        self.notify("Program data saved!")
-        self.loadProgramData()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         buttonId = event.button.id
@@ -382,12 +387,20 @@ class VyntrForDesktop(App):
                     if content:
                         data = json.loads(content)
                         self.vyntrApiKey = data.get('apiKey', '')
-                        if self.vyntrApiKey:
-                            self.query_one("#api_input").value = self.vyntrApiKey
+                        api_input_widget = self.query_one("#api_input", Input)
+                        api_input_widget.value = self.vyntrApiKey
         except json.JSONDecodeError:
             self.log("Error loading program data: Invalid JSON")
         except Exception as e:
             self.log(f"Error loading program data: {e}")
+
+    def action_save_api_key(self) -> None:
+        self.saveProgramData()
+        self.notify('Vyntr API key saved successfully.')
+
+    def action_quit(self) -> None:
+        self.saveProgramData()
+        self.exit()
 
 if __name__ == "__main__":
     app = VyntrForDesktop()
