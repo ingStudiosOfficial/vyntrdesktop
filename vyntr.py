@@ -181,8 +181,8 @@ class UnitConversionContainer(Container):
         self.result = result
 
     def compose(self) -> ComposeResult:
-        yield Static(f'{str(self.value)} {self.fromUnit} ≈', classes="initial_value")
-        yield Static(f'{str(self.result)} {self.toUnit}', classes="converted_value")
+        yield Static(f'{str(round(self.value, 2))} {self.fromUnit} ≈', classes="initial_value")
+        yield Static(f'{str(round(self.result,2))} {self.toUnit}', classes="converted_value")
         yield Static(f'Converting {self.category}', classes="conversion_category")
 
 class SetApiKeyButton(Button):
@@ -210,7 +210,7 @@ class VyntrForDesktop(App):
     def compose(self) -> ComposeResult:
         yield Header()
         yield Static('Vyntr for Desktop', classes="vyntr_title")
-        yield Static('Welcome to Vyntr for Desktop! Start searching to get started!', classes="welcome_text")
+        yield Static('Welcome to Vyntr for Desktop! Enter your API key (https://vyntr.com/api) and start searching to get started!', classes="welcome_text")
         with Center():
             yield Input(placeholder="How do I cook...", id="search_input")
             yield Input(placeholder="Vyntr API key", id="api_input", classes="hidden", value=vyntrApiKey)

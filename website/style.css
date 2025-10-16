@@ -44,8 +44,9 @@ body {
     background-color: #56290c;
 }
 
-.vyntr-preview {
+.demo-video {
     height: 40vh;
     border-radius: 10px;
     border: #a8a75d 1px solid;
+    margin: 20px;
 }
