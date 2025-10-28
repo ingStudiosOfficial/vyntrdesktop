@@ -22,6 +22,13 @@ body {
     font-size: 50px;
 }
 
+.download-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+}
+
 .download-button {
     all: unset;
     cursor: pointer;
@@ -33,6 +40,7 @@ body {
     transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out, background-color 0.3s ease-in-out;
     margin: 10px;
     border: #a8a75d 1px solid;
+    text-align: center;
 }
 
 .download-button:hover {
