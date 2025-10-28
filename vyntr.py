@@ -6,13 +6,24 @@ from textual.screen import Screen
 from textual import on
 from ics import Calendar, Event
 from datetime import datetime, date
-import re, requests, os, webbrowser, json, sys
+import re, requests, os, webbrowser, json, sys, platform, subprocess
 
 # Get base path for PyInstaller bundled files
 if getattr(sys, 'frozen', False):
     base_path = sys._MEIPASS
 else:
     base_path = os.path.dirname(__file__)
+
+# Get the program data directory for each platform
+def getDataDir():
+    if platform.system() == 'Windows': # Windows
+        base = os.getenv('LOCALAPPDATA')
+    elif platform.system() == 'Darwin': # macOS
+        base = os.path.expanduser('~/Library/Application Support')
+    else: # Linux and others
+        base = os.getenv('XDG_DATA_HOME', os.path.expanduser('~/.local/share'))
+    
+    return os.path.join(base, 'ingStudios', 'Vyntr for Desktop')
 
 searchHistory = []
 vyntrApiKey = ''
@@ -97,13 +108,18 @@ class DateContainer(Container):
 
             # Sanitize filename - remove invalid characters
             safe_filename = "".join(c for c in self.description if c.isalnum() or c in (' ', '-', '_')).rstrip()
-            pathToSave = os.path.join(os.getenv('LOCALAPPDATA'), 'ingStudios', 'Vyntr for Desktop', f'{safe_filename}_event.ics')
+            pathToSave = os.path.join(getDataDir(), f'{safe_filename}_event.ics')
             os.makedirs(os.path.dirname(pathToSave), exist_ok=True)
 
             with open(pathToSave, 'w') as f:
                 f.writelines(c.serialize_iter())
 
-            os.startfile(pathToSave)
+            if platform.system() == 'Windows': # Windows
+                os.startfile(pathToSave)
+            elif platform.system() == 'Darwin': # macOS
+                subprocess.call(['open', pathToSave]);
+            else: # Linux and others
+                subprocess.call(['xdg-open', pathToSave])
         except Exception as e:
             print(f"An error occurred: {e}")
 
@@ -199,7 +215,7 @@ class VyntrForDesktop(App):
 
     TITLE = 'Vyntr for Desktop'
 
-    pathToSave = os.path.join(os.getenv('LOCALAPPDATA'), 'ingStudios', 'Vyntr for Desktop', 'program_data.json')
+    pathToSave = os.path.join(getDataDir(), 'program_data.json')
     
     os.makedirs(os.path.dirname(pathToSave), exist_ok=True)
     
