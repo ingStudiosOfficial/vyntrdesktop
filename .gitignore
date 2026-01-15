@@ -1,3 +1,4 @@
 build/
 dist/
 pyinstaller_command.txt
+*.spec
