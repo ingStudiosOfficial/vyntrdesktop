@@ -7,7 +7,7 @@
 Vyntr is an independent search engine created by FaceDev. The Vyntr source code can be found [here](https://github.com/outpoot/vyntr). Try the original search engine [here](https://vyntr.com).
 
 # Run Vyntr for Desktop ⬇️
-**IMPORTANT:** Vyntr for Desktop is now available for **Windows** and **Linux** users.
+**IMPORTANT:** Vyntr for Desktop is now available for **Windows** and **Linux (ARM)** users.
 
 ## Windows
 1. **Download the .exe file and open it**
